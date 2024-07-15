@@ -5,6 +5,7 @@ import pandas as pd
 def landing_page_display(file, sep=",", head=0):
     if file is not None:
         df = pd.read_csv(file, sep=sep, header=head)
+        st.session_state['file'] = df
         st.header("Preview")
         st.subheader("5 first rows")
         st.write(df.head(5))
@@ -14,6 +15,9 @@ def landing_page_display(file, sep=",", head=0):
         st.header("Basic statistics")
         st.write(df.describe())
 
+st.set_page_config(
+    page_title="Landing page"
+)
 
 st.write("CAPELLA Jean-Baptiste")
 st.write("FAJERMAN Yohan")

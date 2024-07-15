@@ -1,0 +1,2 @@
+# The .streamlit folder is only here to solve an encoutered issue with the file upload ("AxiosError: Request failed with status code 403") 
+.streamlit/
