@@ -12,20 +12,10 @@ def landing_page_display(file, sep=",", head=0):
         st.subheader("5 last rows")
         st.write(df.tail(5))
 
-        st.header("Basic statistics")
-        nb_rows = df.count(0)[0]
-        nb_cols = df.count(1)[0]
-        nb_na_cols = df.isnull().sum()
-        st.write("Number of rows = " + str(nb_rows))
-        st.write("Number of columns = " + str(nb_cols))
-        st.write("Number of NA per column:")
-        st.write(nb_na_cols)
-        st.write(df.describe(include="all"))
 
 st.set_page_config(
     page_title="Landing page"
 )
-
 
 st.title("Data Mining dedicated app")
 
@@ -37,7 +27,7 @@ st.header("File reading")
 user_file = st.file_uploader("Please import your file here",accept_multiple_files=False, type=['csv', 'xls', 'data',
                                                                                                'txt'])
 separator = st.text_input("Please enter the separator used in your file", value=",", max_chars=2)
-hasHeader = st.checkbox("Please tick this box if your file contains a header (keep it unchecked if not)", value=True)
+hasHeader = st.checkbox("Please tick this box if your file contains a header (uncheck if not)", value=True)
 
 if hasHeader:
     header = 0
