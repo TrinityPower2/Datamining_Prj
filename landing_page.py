@@ -1,6 +1,20 @@
 import streamlit as st
 import pandas as pd
 
+
+def landing_page_display(file, sep=",", head=0):
+    if file is not None:
+        df = pd.read_csv(file, sep=sep, header=head)
+        st.header("Preview")
+        st.subheader("5 first rows")
+        st.write(df.head(5))
+        st.subheader("5 last rows")
+        st.write(df.tail(5))
+
+        st.header("Basic statistics")
+        st.write(df.describe())
+
+
 st.write("CAPELLA Jean-Baptiste")
 st.write("FAJERMAN Yohan")
 st.write("BIA1")
@@ -12,16 +26,17 @@ st.write("Welcome to our web app! In here, you will be able to load a tabular fi
          "perform various analysis to discover your data.")
 
 st.header("File reading")
-user_file = st.file_uploader("Please import your file here",accept_multiple_files=False, type=['csv', 'xls', 'xlsx'])
+user_file = st.file_uploader("Please import your file here",accept_multiple_files=False, type=['csv', 'xls', 'data',
+                                                                                               'txt'])
 separator = st.text_input("Please enter the separator used in your file", value=",", max_chars=2)
-hasHeader = st.checkbox("Please tick this box if your file contains a header (keep it unchecked if not)")
-print(int(hasHeader))
-print(user_file.type)
-if user_file is not None:
-    df = pd.read_csv(user_file, sep=separator, header=int(hasHeader))
-    st.write(df.head(5))
-    st.write(df.tail(5))
+hasHeader = st.checkbox("Please tick this box if your file contains a header (keep it unchecked if not)", value=True)
 
-# csv type = application/vnd.ms-excel
-# xlsx type = application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
-# xls type = application/vnd.ms-excel
+if hasHeader:
+    header = 0
+else:
+    header = None
+
+ok_btn = st.button("OK")
+
+if ok_btn:
+    landing_page_display(user_file, separator, head=header)
