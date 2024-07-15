@@ -1,3 +1,4 @@
+import pandas
 import streamlit as st
 import pandas as pd
 
@@ -5,6 +6,7 @@ import pandas as pd
 def landing_page_display(file, sep=",", head=0):
     if file is not None:
         df = pd.read_csv(file, sep=sep, header=head)
+        st.session_state['file'] = df
         st.header("Preview")
         st.subheader("5 first rows")
         st.write(df.head(5))
@@ -12,8 +14,18 @@ def landing_page_display(file, sep=",", head=0):
         st.write(df.tail(5))
 
         st.header("Basic statistics")
-        st.write(df.describe())
+        nb_rows = df.count(0)[0]
+        nb_cols = df.count(1)[0]
+        nb_na_cols = df.isnull().sum()
+        st.write("Number of rows = " + str(nb_rows))
+        st.write("Number of columns = " + str(nb_cols))
+        st.write("Number of NA per column:")
+        st.write(nb_na_cols)
+        st.write(df.describe(include="all"))
 
+st.set_page_config(
+    page_title="landing page"
+)
 
 st.write("CAPELLA Jean-Baptiste")
 st.write("FAJERMAN Yohan")
