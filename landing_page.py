@@ -1,4 +1,3 @@
-import pandas
 import streamlit as st
 import pandas as pd
 
@@ -24,7 +23,7 @@ def landing_page_display(file, sep=",", head=0):
         st.write(df.describe(include="all"))
 
 st.set_page_config(
-    page_title="landing page"
+    page_title="Landing page"
 )
 
 st.write("CAPELLA Jean-Baptiste")
