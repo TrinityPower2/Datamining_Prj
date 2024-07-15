@@ -26,11 +26,8 @@ st.set_page_config(
     page_title="Landing page"
 )
 
-st.write("CAPELLA Jean-Baptiste")
-st.write("FAJERMAN Yohan")
-st.write("BIA1")
 
-st.title("Data mining project: data mining dedicated app")
+st.title("Data Mining dedicated app")
 
 st.header("Introduction")
 st.write("Welcome to our web app! In here, you will be able to load a tabular file containing data and "
@@ -51,3 +48,10 @@ ok_btn = st.button("OK")
 
 if ok_btn:
     landing_page_display(user_file, separator, head=header)
+
+
+# Sidebar
+st.sidebar.write("""
+    Jean-Baptiste Capella - Yohan FAJERMAN - BIA1
+""")
+st.sidebar.write("Data Mining Project")
