@@ -50,9 +50,12 @@ st.set_page_config(
 
 st.title("Data Pre-processing & Cleaning")
 
-df = st.session_state["file"]
-
-if df is not None:
+try:
+    df = st.session_state["file"]
+except KeyError: # catching the error when no file has been registered
+    # Warning when the user has not uploaded a file yet 
+    st.subheader(":warning: **Please upload your dataset first in the landing page!**")
+else: # case when the file has been uploaded
     clean_df = df
     st.header("NA values cleaning")
     na_cleaning_list = ["Delete rows and/or columns with missing values",
