@@ -1,47 +1,87 @@
 # PREPROCESSING PAGE
 import pandas
 import streamlit as st
+import numpy as np
+from sklearn.impute import KNNImputer
+from sklearn.preprocessing import MinMaxScaler, MaxAbsScaler
+from scipy.stats import zscore
 
-
-def delete_na(df_to_clean: pandas.DataFrame):
-    st.write("Please select where to delete the NA values")
-
-    dlt_choice_row_btn = st.button("Rows")
-    dlt_choice_col_btn = st.button("Columns")
-    dlt_choice_both_btn = st.button("Both")
-    st.button("Cancel", key="cancel_delete")
-
-    if dlt_choice_row_btn:
-        df_to_clean.dropna(axis=0, inplace=True)
-    elif dlt_choice_col_btn:
+def delete_na(df_to_clean: pandas.DataFrame, method):
+    if method == "Rows":
+        df_to_clean.dropna(axis=0, inplace=True, how='any')
+    elif method == "Columns":
         df_to_clean.dropna(axis=1, inplace=True)
-    elif dlt_choice_both_btn:
+    elif method == "Both":
         df_to_clean.dropna(axis=0, inplace=True)
         df_to_clean.dropna(axis=1, inplace=True)
-
-    return df_to_clean
-
-
-def replace_na(df_to_clean: pandas.DataFrame):
-    st.write("Please select the method to use (mode will always be used for non-numerical columns)")
-
-    rpl_choice_mean_btn = st.button("Mean")
-    rpl_choice_med_btn = st.button("Median")
-    rpl_choice_mode_btn = st.button("Mode")
-    st.button("Cancel", key="cancel_replace")
-
-    if rpl_choice_mean_btn:
-        return 1
-    elif rpl_choice_med_btn:
-        return 1
-    elif rpl_choice_mode_btn:
-        return 1
-
-    return df_to_clean
+    st.session_state["file"] = df_to_clean
+    set_stage(1)
+    st.rerun()
 
 
-def replace_na_algo(df_to_clean: pandas.DataFrame):
-    return 1
+def replace_na(df_to_clean: pandas.DataFrame, method):
+    # handling numeric columns
+    if method == "Mean":
+        df_to_clean.fillna(df_to_clean.mean(numeric_only=True, skipna=True), inplace=True)
+    elif method == "Median":
+        df_to_clean.fillna(df_to_clean.median(numeric_only=True, skipna=True), inplace=True)
+    elif method == "Mode":
+        df_to_clean.fillna(df_to_clean.mode(numeric_only=True, dropna=True), inplace=True)
+
+    # handling the remaining non-numeric columns by filling in with the mode
+    df_to_clean.fillna(df_to_clean.mode(), inplace=True)
+
+    st.session_state["file"] = df_to_clean
+    set_stage(1)
+    st.rerun()
+
+
+def replace_na_algo(df_to_clean: pandas.DataFrame, method):
+
+    if method == "KNN":
+        knn_imputer = KNNImputer(n_neighbors=1)
+        for i in df_to_clean:
+            if df[i].dtype != object:
+                df[i] = knn_imputer.fit_transform(pandas.DataFrame(df[i]))
+    elif method == "Simple imputation":
+        df_to_clean.interpolate(inplace=True)
+
+    st.session_state["file"] = df_to_clean
+    set_stage(1)
+    st.rerun()
+
+
+def min_max_norm(df_to_norm):
+    normalizer = MinMaxScaler(copy=False)
+    for i in df_to_norm:
+        if df[i].dtype != object:
+            df[i] = normalizer.fit_transform(pandas.DataFrame(df[i]))
+
+    st.session_state["file"] = df_to_norm
+    st.rerun()
+
+
+def z_score_norm(df_to_norm):
+    for i in df_to_norm:
+        if df[i].dtype != object:
+            df[i] = zscore(df[i])
+
+    st.session_state["file"] = df_to_norm
+    st.rerun()
+
+
+def max_abs_norm(df_to_norm):
+    normalizer = MaxAbsScaler(copy=False)
+    for i in df_to_norm:
+        if df[i].dtype != object:
+            df[i] = normalizer.fit_transform(pandas.DataFrame(df[i]))
+
+    st.session_state["file"] = df_to_norm
+    st.rerun()
+
+
+def set_stage(i):
+    st.session_state["stage"] = i
 
 
 st.set_page_config(
@@ -55,30 +95,71 @@ try:
 except KeyError: # catching the error when no file has been registered
     # Warning when the user has not uploaded a file yet 
     st.subheader(":warning: **Please upload your dataset first in the landing page!**")
-else: # case when the file has been uploaded
-    clean_df = df
+else:  # case when the file has been uploaded
+    st.subheader("Current state of df")
+    st.write(df)
+    if 'stage' not in st.session_state:
+        set_stage(1)
+
     st.header("NA values cleaning")
+
     na_cleaning_list = ["Delete rows and/or columns with missing values",
                         "Replace missing values with mean/median/mode",
                         "Use a sophisticated imputation algorithm"]
     select_output = st.selectbox("**Please select your NA values cleaning method and press OK**",
                                  na_cleaning_list)
-    na_ok_btn = st.button("OK")
-
-    if na_ok_btn:
+    if st.button("OK") or st.session_state["stage"] == 2:
         if select_output == "Delete rows and/or columns with missing values":
             st.subheader(select_output)
-            clean_df = delete_na(df)
+
+            possibility_list = ["Rows", "Columns", "Both"]
+            select_output = st.selectbox("**Please select where to delete the NA values and press Start**",
+                                         possibility_list)
+
+            if st.button("Start", key="St1", on_click=set_stage(2)):
+                delete_na(df, select_output)
+
         elif select_output == "Replace missing values with mean/median/mode":
             st.subheader(select_output)
-            clean_df = replace_na(df)
+
+            possibility_list = ["Mean", "Median", "Mode"]
+            select_output = st.selectbox("**Please select the method to use (mode will always be used for non-numerical"
+                                         " columns) and press start**",
+                                         possibility_list)
+            if st.button("Start", key="St2", on_click=set_stage(2)):
+                replace_na(df, select_output)
+
         elif select_output == "Use a sophisticated imputation algorithm":
             st.subheader(select_output)
-            clean_df = replace_na_algo(df)
+
+            possibility_list = ["KNN", "Simple imputation"]
+            select_output = st.selectbox("**Please select the method to use and press start (note that only NaN from "
+                                         "numeric columns will be treated)**",
+                                         possibility_list)
+            if st.button("Start", key="St3", on_click=set_stage(2)):
+                replace_na_algo(df, select_output)
         else:
             st.write("Unknown method")
 
     st.header("Data normalization")
+
+    normalization_list = ["Min-max normalization",
+                          "Z-score standardization",
+                          "MaxAbs normalization"]
+    select_output = st.selectbox("**Please select your normalization method and press OK**",
+                                 normalization_list)
+    if st.button("OK", key="OK2"):
+        if select_output == "Min-max normalization":
+            min_max_norm(df)
+
+        elif select_output == "Z-score standardization":
+            z_score_norm(df)
+
+        elif select_output == "MaxAbs normalization":
+            max_abs_norm(df)
+        else:
+            st.write("Unknown method")
+
 
 # Sidebar
 st.sidebar.write("""
