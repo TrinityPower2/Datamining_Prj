@@ -41,8 +41,23 @@ def calculate_cluster_statistics(labels, model):
 def clustering_evaluation(data, model):
     labels = model.labels_ if type(model) == DBSCAN else model.predict(data)
     centers = model.cluster_centers_ if type(model) == KMeans else None
+
+    # Further infos on the clustering model
+    st.subheader("Clustering model infos: ")
+    if type(model) == KMeans:
+        st.write("**Number of clusters**: ", model.n_clusters)
+        st.write("**Inertia**: ", model.inertia_)
+    elif type(model) == DBSCAN:
+        st.write("**Epsilon**: ", model.eps)
+        st.write("**Min samples**: ", model.min_samples)
     
+    # Visualization of the clusters
+    st.markdown("---")
     visualize_clusters(data, labels, centers)
+
+    # Cluster statistics
+    st.markdown("---")
+    st.subheader("Cluster statistics: ")
     cluster_statistics = calculate_cluster_statistics(labels, centers)
     st.write(pd.DataFrame(cluster_statistics).T)
 
@@ -55,9 +70,6 @@ def clustering_evaluation(data, model):
         st.write("Calinski-Harabasz score:", calinski_harabasz_score(data, labels))
     with col3:
         st.write("Davies-Bouldin score:", davies_bouldin_score(data, labels))
-
-    # st.write("Confusion matrix:")
-    # st.write(confusion_matrix(data, labels))
 
 
 
@@ -87,20 +99,31 @@ def prediction_evaluation(data, model, train_test_dict):
     
     # Classification Eval
     if type(model) == RandomForestClassifier:
+        # Further infos on the classification model
+        st.subheader("Random Forest Classifier infos: ")
+        st.write("**Number of trees**: ", model.n_estimators)
+        st.write("**Criterion**: ", model.criterion)
+        st.write("**Max depth**: ", model.max_depth)
+        st.markdown("---")
+
+        # Classification report
         st.subheader("Classification report: ")
         report = classification_report(y_true, y_pred, output_dict=True)
         st.write(pd.DataFrame(report).T)
 
+        # Confusion Matrix
         st.markdown("---")
         st.subheader("Confusion Matrix: ")
         st.write(pd.DataFrame(confusion_matrix(y_true, y_pred)))
 
+        # Feature importances	
         st.markdown("---")
         st.subheader("Feature importances: ")
         plot_feature_importance(data, model)
 
     # Regression Eval
-    elif type(model) == LinearRegression:
+    elif type(model) == LinearRegression:       
+        # Regression Plot
         st.subheader("Plot of the real against the predicted values: ")
         fig, ax = plt.subplots()
         ax.scatter(y_true, y_pred)
@@ -110,6 +133,7 @@ def prediction_evaluation(data, model, train_test_dict):
         ax.set_title('Real Values vs Predicted Values')
         st.pyplot(fig)
 
+        # Metrics
         st.markdown("---")
         st.subheader("Regression metrics: ")
         col1, col2, col3 = st.columns(3)
@@ -143,6 +167,7 @@ else: # case when the file has been uploaded
     st.write(df.head())
 
     if type(model) == KMeans or type(model) == DBSCAN:
+        st.markdown("---")
         clustering_evaluation(df, model)
     elif type(model) == RandomForestClassifier or type(model) == LinearRegression:
         st.write("**Target variable**: ", st.session_state["target"])
