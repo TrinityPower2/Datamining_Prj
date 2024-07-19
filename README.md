@@ -46,7 +46,7 @@ _Great! How do I install all of this?_
 Please follow the procedure to install and use our platform: 
 
 + Clone the git repository
-+ Make sure to install all the libraries inside requirements.txt file
++ Make sure to install all the libraries inside requirements.txt file (in a terminal: pip install -r requirements.txt)
 + Go into your terminal (make sure that you are on the project directory)
 + Execute the following command: streamlit run landing_page.py
 The Streamlit app should now run on your web browser! 
