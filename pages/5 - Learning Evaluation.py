@@ -5,40 +5,65 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-from sklearn import datasets
 from sklearn.cluster import KMeans, DBSCAN
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LinearRegression
+from sklearn.decomposition import PCA
 from sklearn.metrics import silhouette_score, confusion_matrix, calinski_harabasz_score, davies_bouldin_score, classification_report, r2_score, mean_squared_error
 
 
 # CLUSTERING METHODS FUNCTIONS
 # Function to plot the clusters and the centroids
 def visualize_clusters(data, labels, centers):
-    fig, ax = plt.subplots()
-    ax.scatter(data.iloc[:, 0], data.iloc[:, 1], c=labels, s=50, cmap='viridis')
+    fig, ax = plt.subplots(figsize=(8, 8))
+    scatter = ax.scatter(data.iloc[:, 0], data.iloc[:, 1], c=labels, s=50, cmap='viridis')
     if centers is not None:
         ax.scatter(centers[:, 0], centers[:, 1], c='red', s=100, alpha=0.5)
 
     ax.set_title('Visualization of the clusters')
+    ax.legend(*scatter.legend_elements(), title="Classes")
     ax.grid()
     st.pyplot(fig)
 
+
+# Function to plot the PCA (when performed)
+def visualize_pca(pca_data, labels):
+    fig = plt.figure(figsize=(8, 8))
+    ax = fig.add_subplot(1, 1, 1)
+    ax.set_xlabel("PC1", fontsize=15)
+    ax.set_ylabel("PC2", fontsize=15)
+    ax.set_title("PCA Visualization", fontsize=20)
+
+    scatter = ax.scatter(pca_data[:, 0], pca_data[:, 1], c=labels, cmap='viridis', s=50)
+    ax.legend(*scatter.legend_elements(), title="Classes")
+    ax.grid()
+    st.pyplot(fig)
+
+
 # Function to calculate the statistics of the clusters (number of points, centers, densities)
 def calculate_cluster_statistics(labels, model):
+    # count the number of points in each cluster
     unique_labels, counts = np.unique(labels, return_counts=True)
     cluster_statistics = {}
 
+    # store the statistics of each cluster in a dictionary
     for label, count in zip(unique_labels, counts):        
         cluster_statistics[str(label)] = {
             'count': count,
-            'center': model.cluster_centers_[label].round(2) if type(model) == KMeans else None,
-            'density': model.core_sample_indices_[label] if type(model) == DBSCAN else None
+            'center': model.cluster_centers_[label].round(2) if type(model) == KMeans else None, 
+            'density': model.core_sample_indices_[label] if type(model) == DBSCAN else None 
         }
     return cluster_statistics
 
 
+# Function to display the evaluation of clustering models
 def clustering_evaluation(data, model):
+    # set the data to the PCA data if it was performed
+    is_pca = st.session_state["is_pca"]
+    if is_pca:
+        data = pd.DataFrame(st.session_state["pca_data"])
+
+    # store the labels and centers of the clusters
     labels = model.labels_ if type(model) == DBSCAN else model.predict(data)
     centers = model.cluster_centers_ if type(model) == KMeans else None
 
@@ -47,12 +72,20 @@ def clustering_evaluation(data, model):
     if type(model) == KMeans:
         st.write("**Number of clusters**: ", model.n_clusters)
         st.write("**Inertia**: ", model.inertia_)
+        st.write("**Clustering applied on which data**: ", ("PCA data" if st.session_state["is_pca"] else "Original data"))
     elif type(model) == DBSCAN:
         st.write("**Epsilon**: ", model.eps)
         st.write("**Min samples**: ", model.min_samples)
+
+    # PCA visualization (if performed)
+    if is_pca:
+        st.markdown("---")
+        st.subheader("PCA Visualization: ")
+        visualize_pca(data.values, labels)
     
     # Visualization of the clusters
     st.markdown("---")
+    st.subheader("Visualization of the clusters: ")
     visualize_clusters(data, labels, centers)
 
     # Cluster statistics
@@ -61,6 +94,7 @@ def clustering_evaluation(data, model):
     cluster_statistics = calculate_cluster_statistics(labels, centers)
     st.write(pd.DataFrame(cluster_statistics).T)
 
+    # Calculation of indices
     st.markdown("---")
     st.subheader("Clustering evaluation indices: ")
     col1, col2, col3 = st.columns(3)
@@ -74,6 +108,7 @@ def clustering_evaluation(data, model):
 
 
 # SUPERVISED LEARNING FUNCTIONS
+# Function to plot the feature importances
 def plot_feature_importance(data, model):
         # get the feature importances and names
         importances = model.feature_importances_
@@ -93,7 +128,9 @@ def plot_feature_importance(data, model):
         st.pyplot(fig)
 
 
+# Function to evaluate the prediction models (supervised learning)
 def prediction_evaluation(data, model, train_test_dict):
+    # store the real and predicted values
     y_true = train_test_dict["y_test"]
     y_pred = model.predict(train_test_dict["X_test"])
     
@@ -146,11 +183,13 @@ def prediction_evaluation(data, model, train_test_dict):
         
         st.write("**Model's Coefficients**: ", pd.DataFrame(model.coef_).T)
     
+
 st.set_page_config(
     page_title="Learning Evaluation",
 )
 
 st.title("Learning Evaluation")
+
 
 try:
     df = st.session_state["file"]
@@ -158,6 +197,7 @@ except KeyError: # catching the error when no file has been registered
     # Warning when the user has not uploaded a file yet 
     st.subheader(":warning: **Please upload your dataset first in the landing page!**")
 else: # case when the file has been uploaded
+    # get the last trained model and its name
     model = st.session_state["model"] 
     last_model_name = model.__class__.__name__ 
 
@@ -166,6 +206,7 @@ else: # case when the file has been uploaded
     st.markdown("**Dataset Preview**: ")
     st.write(df.head())
 
+    # Display the evaluation depending on the model type
     if type(model) == KMeans or type(model) == DBSCAN:
         st.markdown("---")
         clustering_evaluation(df, model)
