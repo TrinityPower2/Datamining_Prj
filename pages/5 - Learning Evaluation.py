@@ -78,7 +78,7 @@ def clustering_evaluation(data, model):
         st.write("**Min samples**: ", model.min_samples)
 
     # PCA visualization (if performed)
-    if is_pca:
+    if is_pca and type(model) == KMeans:
         st.markdown("---")
         st.subheader("PCA Visualization: ")
         visualize_pca(data.values, labels)

@@ -1,4 +1,5 @@
 # CLUSTERING / PREDICTION PAGE
+import pandas
 import streamlit as st
 from pandas.core.dtypes.common import is_numeric_dtype
 from sklearn.cluster import KMeans, DBSCAN
@@ -115,6 +116,16 @@ except KeyError: # catching the error when no file has been registered
 else:  # case when the file has been uploaded
     if 'status' not in st.session_state:
         set_status(1)
+
+    # removing a column from df
+    st.header("Remove a column before training models")
+    select_output = st.selectbox("**If you want to remove a column due to high correlation with another feature, "
+                                 "select it here and press OK**",
+                                 df.columns)
+    if st.button("OK", key="OK5"):
+        df.pop(select_output)
+        st.rerun()
+
 
     # clustering model choice & inputs
     st.header("Clustering models")

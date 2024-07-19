@@ -1,5 +1,6 @@
 # PREPROCESSING PAGE
 import pandas
+import pandas as pd
 import streamlit as st
 import numpy as np
 from sklearn.impute import KNNImputer
@@ -60,11 +61,11 @@ def replace_na_algo(df_to_clean: pandas.DataFrame, method):
     st.rerun()
 
 
-def min_max_norm(df_to_norm):
+def min_max_norm(df_to_norm, excluded_col):
     # min max normalize the data
     normalizer = MinMaxScaler(copy=False)
     for i in df_to_norm:
-        if df[i].dtype != object:
+        if df[i].dtype != object and i != excluded_col:
             df[i] = normalizer.fit_transform(pandas.DataFrame(df[i]))
 
     # replace df by cleaned version in session state storage
@@ -72,10 +73,10 @@ def min_max_norm(df_to_norm):
     st.rerun()
 
 
-def z_score_norm(df_to_norm):
+def z_score_norm(df_to_norm, excluded_col):
     # z_score normalize the data
     for i in df_to_norm:
-        if df[i].dtype != object:
+        if df[i].dtype != object and i != excluded_col:
             df[i] = zscore(df[i])
 
     # replace df by cleaned version in session state storage
@@ -83,11 +84,11 @@ def z_score_norm(df_to_norm):
     st.rerun()
 
 
-def max_abs_norm(df_to_norm):
+def max_abs_norm(df_to_norm, excluded_col):
     # max_abs normalize the data
     normalizer = MaxAbsScaler(copy=False)
     for i in df_to_norm:
-        if df[i].dtype != object:
+        if df[i].dtype != object and i != excluded_col:
             df[i] = normalizer.fit_transform(pandas.DataFrame(df[i]))
 
     # replace df by cleaned version in session state storage
@@ -179,17 +180,18 @@ else:  # case when the file has been uploaded
                           "MaxAbs normalization"]
     select_output = st.selectbox("**Please select your normalization method and press OK**",
                                  normalization_list)
+    col_to_exclude = st.text_input("If you want to exclude a column from normalization, write it here", value=None)
 
     # normalization start
     if st.button("OK", key="OK2"):
         if select_output == "Min-max normalization":
-            min_max_norm(df)
+            min_max_norm(df, col_to_exclude)
 
         elif select_output == "Z-score standardization":
-            z_score_norm(df)
+            z_score_norm(df, col_to_exclude)
 
         elif select_output == "MaxAbs normalization":
-            max_abs_norm(df)
+            max_abs_norm(df, col_to_exclude)
         else:
             st.write("Unknown method")
 
