@@ -116,36 +116,6 @@ else:  # case when the file has been uploaded
     if 'status' not in st.session_state:
         set_status(1)
 
-    # display all information about the currently stored model & associated data (traintest set, target, ...)
-    st.subheader("Current state of df")
-    st.write(df)
-
-    if "model" in st.session_state:
-        st.subheader("Current state of model")
-        st.write(str(type(st.session_state["model"])))
-        if "target" in st.session_state and str(type(st.session_state["model"])) in ["<class "
-                                                                                     "'sklearn.ensemble._forest."
-                                                                                     "RandomForestClassifier'>",
-                                                                                     "<class 'sklearn.linear_model."
-                                                                                     "_base.LinearRegression'>"]:
-            st.write("Target column")
-            st.write(st.session_state["target"])
-        st.write(st.session_state["model"].get_params())
-    if "train_test_dict" in st.session_state and str(type(st.session_state["model"])) in ["<class "
-                                                                                          "'sklearn.ensemble._forest."
-                                                                                          "RandomForestClassifier'>",
-                                                                                          "<class 'sklearn.linear_model"
-                                                                                          "._base.LinearRegression'>"]:
-        st.subheader("Current state of train test dict")
-        st.write(st.session_state["train_test_dict"])
-    if "is_pca" in st.session_state and str(type(st.session_state["model"])) == ("<class "
-                                                                                 "'sklearn.cluster._kmeans.KMeans'>"):
-        st.subheader("Current state of is_pca")
-        st.write(st.session_state["is_pca"])
-        if st.session_state["is_pca"]:
-            st.subheader("Current state of pca")
-            st.write(st.session_state["pca_data"])
-
     # clustering model choice & inputs
     st.header("Clustering models")
 
@@ -182,6 +152,7 @@ else:  # case when the file has been uploaded
             st.write("Unknown model")
 
     # prediction models choice & inputs
+    st.markdown("---")
     st.header("Prediction models")
 
     # model choice
