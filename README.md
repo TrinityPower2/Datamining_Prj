@@ -1,52 +1,45 @@
-**Dedicated platform for data mining!** 
+<h1>Dedicated platform for data mining!</h1>
 
-_What is in here?_
+<h2>What is in here?</h2> 
+<p>This project contains a Streamlit platform where you can upload a tabular file (csv, xls, txt, data), and perform various analysis depending on your dataset.</p>
 
-This project contains a Streamlit platform where you can upload a tabular file (csv, xls, txt, data), and perform various analysis depending on your dataset. 
+<h2>What are the functionalities?</h2>
+<p>You have 6 pages inside the Streamlit, each offering different functionalities: </p>
 
-_What are the functionalities?_
+<h3>Data import</h3>
+<p>Import your file, specify the used delimiter and if there is a header or not. You can then have a look at a preview of your imported dataset to make sure everything went fine. </p>
 
-You have 6 pages inside the Streamlit, each offering different functionalities: 
+<h4> Please note that all the next functionalities require you to have uploaded your file on the first page! </h4>
 
-**Data import**
+<h3>Data exploration</h3>
+<p>Discover the basic statistics of your dataset. Number of columns, rows, na values, as well as various basic statistical values (mean, std, ...).</p>
 
-Import your file, specify the used delimiter and if there is a header or not. You can then have a look at a preview of your imported dataset to make sure everything went fine. 
-
-_Please note that the next functionalities required you to have uploaded your file on the first page_
-
-**Data exploration**
-
-Discover the basic statistics of your dataset. Number of columns, rows, na values, as well as various basic statistical values (mean, std, ...)
-
-**Data cleaning & normalization**
-
-Clean your dataset using various NA handling methods (delete, replace with basic statistic method , replace with advanced algorithms). 
+<h3>Data cleaning & normalization</h3>
+<p>Clean your dataset using various NA handling methods (delete, replace with basic statistic method , replace with advanced algorithms). 
 You can also normalize your data using various normalization methods (MinMax, Z score, MaxAbs). 
-Please note that the cleaning/normalization process directly affects your uploaded dataset. So be careful when applying those modifications.
+Please note that the cleaning/normalization process directly affects your uploaded dataset. So be careful when applying those modifications.</p>
 
-**Data visualization**
+<h3>Data visualization</h3>
+<p>Create graphs to discover information & insights in your dataset. For example, you can study distribution of your variables using histograms.</p>
 
-Create graphs to discover information & insights in your dataset. For example, you can study distribution of your variables using histograms. 
-
-**Clustering or Prediction**
-
-Now that you got a good grasp of your dataset, it is time to train some machine learning models! The platform handles 4 models: 
-+ KMeans clustering (unsupervised)
-+ DBSCAN clustering (unsupervised)
-+ Linear regression (supervised/regression tasks)
-+ Random forest classifier (supervised/classification tasks)
-
-**Learning evaluation**
-
-Once your model is trained, you might want to learn about its performances. Depending on the model you trained, the platform will display various evaluation criterias & graphs, like for example Davis-Bouldin score for KMeans clustering, or R2 score for regression problems.
+<h3>Clustering or Prediction</h3>
+<p>Now that you got a good grasp of your dataset, it is time to train some machine learning models! The platform handles 4 models:</p>
+<ul>
+<li>KMeans clustering (unsupervised)</li> 
+<li>DBSCAN clustering (unsupervised)</li>
+<li>Linear regression (supervised/regression tasks)</li> 
+<li>Random forest classifier (supervised/classification tasks)</li> 
+</ul>
+<h3>Learning evaluation</h3>
+<p>Once your model is trained, you might want to learn about its performances. Depending on the model you trained, the platform will display various evaluation criterias & graphs, like for example Davis-Bouldin score for KMeans clustering, or R2 score for regression problems.</p>
 
 
-_Great! How do I install all of this?_ 
-
-Please follow the procedure to install and use our platform: 
-
-+ Clone the git repository
-+ Make sure to install all the libraries inside requirements.txt file (in a terminal: pip install -r requirements.txt)
-+ Go into your terminal (make sure that you are on the project directory)
-+ Execute the following command: streamlit run landing_page.py
-The Streamlit app should now run on your web browser! 
+<h2>Great! How do I install all of this?</h2>
+<p>Please follow the procedure to install and use the platform:</p>
+<ol>
+<li>Clone the git repository</li> 
+<li>Make sure to install all the libraries inside requirements.txt file (in a terminal: pip install -r requirements.txt)</li> 
+<li>Go into your terminal (make sure that you are on the project directory)</li>
+<li>Execute the following command: streamlit run landing_page.py</li> 
+</ol>
+<p>The Streamlit app should now run on your web browser!</p>
