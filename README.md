@@ -1,5 +1,8 @@
 <h1>Dedicated platform for data mining!</h1>
 
+<h2>Git hub link:</h2>
+https://github.com/TrinityPower2/Datamining_Prj.git
+
 <h2>What is in here?</h2> 
 <p>This project contains a Streamlit platform where you can upload a tabular file (csv, xls, txt, data), and perform various analysis depending on your dataset.</p>
 
