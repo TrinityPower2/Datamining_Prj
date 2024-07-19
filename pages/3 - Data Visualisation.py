@@ -83,9 +83,6 @@ else: # case when the file has been uploaded
         # condition on the selected variables :  
         if select_bar_x == select_bar_y: # no plot if the selected variables are the same
             st.write(":warning: **Please select two different variables!**")
-        #elif (select_bar_x in num_vars and select_bar_y in num_vars) or (select_bar_x in cat_vars and select_bar_y in cat_vars):
-            # or if we don't have numeric vs categorical
-            #st.write(":warning: **Please select one numerical and one categorical variable for your bar plot!**")
         else:
             sns.barplot(x=select_bar_x, y=select_bar_y, data=df, hue=select_bar_x, legend=False)
             st.pyplot()
