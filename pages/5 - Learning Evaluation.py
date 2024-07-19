@@ -106,7 +106,6 @@ def clustering_evaluation(data, model):
         st.write("Davies-Bouldin score:", davies_bouldin_score(data, labels))
 
 
-
 # SUPERVISED LEARNING FUNCTIONS
 # Function to plot the feature importances
 def plot_feature_importance(data, model):

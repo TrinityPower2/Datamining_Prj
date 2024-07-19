@@ -111,7 +111,7 @@ else: # case when the file has been uploaded
         # condition on the selected variables :  
         if select_scatter_x == select_scatter_y:
             st.write(":warning: **Please select two different variables!**")
-        elif (select_scatter_x in cat_vars and select_scatter_y in cat_vars):
+        elif select_scatter_x in cat_vars and select_scatter_y in cat_vars:
             st.write(":warning: **Please select two numerical variables for your scatter plot!**")
         else:
             fig = px.scatter(df, x=select_scatter_x, y=select_scatter_y)
@@ -125,7 +125,7 @@ else: # case when the file has been uploaded
     heatmap_ok_btn = st.button("Plot heatmap")
 
     if heatmap_ok_btn:
-        sns.heatmap(df.corr(), annot=True)
+        sns.heatmap(df.corr(numeric_only=True).round(decimals=2), annot=True)
         st.pyplot()
 
 
